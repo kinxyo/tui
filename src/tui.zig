@@ -25,6 +25,38 @@ pub const Point = struct {
 
 // ========== Drawing ==========
 
+pub const Protag = struct {
+    cv: Canvas,
+    x: usize,
+    y: usize,
+
+    pub fn init(cv: Canvas, x: ?usize, y: ?usize) Protag {
+        return .{ .cv = cv, .x = x orelse 1, .y = y orelse 1 };
+    }
+
+    pub fn draw(self: *Protag) void {
+        self.cv.point(self.y, self.x);
+    }
+
+    pub fn move(self: *Protag, key: u8) void {
+        switch (key) {
+            'h' => {
+                if (self.x < self.cv.width) self.x += 1;
+            },
+            'l' => {
+                if (self.x > 0) self.x -= 1;
+            },
+            'k' => {
+                if (self.y < self.cv.height) self.y += 1;
+            },
+            'j' => {
+                if (self.y > 0) self.y -= 1;
+            },
+            else => {},
+        }
+    }
+};
+
 pub const Canvas = struct {
     width: usize,
     height: usize,

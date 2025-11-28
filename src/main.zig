@@ -8,32 +8,24 @@ pub fn main() !void {
     try tui.enableRaw(hn);
     defer tui.disableRaw(hn);
 
-    fmt.print("\x1b[2J\x1b[H");
-    fmt.print("\x1b[?25l");
+    fmt.print("\x1b[2J\x1b[H"); // clear the screen and reset cursor pos
+    fmt.print("\x1b[?25l"); // hide the cursor
 
     const cv: tui.Canvas = try .init(hn, null, null);
-    var pos_x: usize = 10;
-    var pos_y: usize = 5;
+    var protag: tui.Protag = .init(cv, cv.width / 2, cv.height / 2);
 
-    // cv.draw();
     while (true) {
         // render
-        fmt.print("\x1b[2J\x1b[H");
-        fmt.print("\x1b[33m");
-        cv.point(pos_y, pos_x);
-        fmt.print("\x1b[0m");
+        protag.draw();
         fmt.flush();
 
         // poll events
         const key = try stdin.takeByte();
         if (key == 'q') break;
-        if (key == 'h' and pos_x < cv.width) pos_x += 1;
-        if (key == 'l' and pos_x > 0) pos_x -= 1;
-        if (key == 'k' and pos_y < cv.height) pos_y += 1;
-        if (key == 'j' and pos_y > 0) pos_y -= 1;
+        protag.move(key);
     }
 
-    fmt.print("\x1b[?25h");
-    fmt.print("\x1b[2J\x1b[H");
+    fmt.print("\x1b[?25h"); // show cursor
+    fmt.print("\x1b[2J\x1b[H"); // clear the screen and reset cursor pos
     fmt.flush();
 }
