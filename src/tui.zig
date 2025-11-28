@@ -34,23 +34,42 @@ pub const Protag = struct {
         return .{ .cv = cv, .x = x orelse 1, .y = y orelse 1 };
     }
 
+    pub fn clearPrev(self: *Protag) void {
+        self.cv.point(self.y, self.x, " ");
+        // fmt.printf("\x1b[{d};{d}H", .{ self.y, self.x });
+    }
+
     pub fn draw(self: *Protag) void {
-        self.cv.point(self.y, self.x);
+        fmt.print("\x1b[33m");
+        self.cv.point(self.y, self.x, "*");
+        fmt.print("\x1b[0m");
     }
 
     pub fn move(self: *Protag, key: u8) void {
         switch (key) {
             'h' => {
-                if (self.x < self.cv.width) self.x += 1;
+                if (self.x < self.cv.width) {
+                    self.clearPrev();
+                    self.x += 1;
+                }
             },
             'l' => {
-                if (self.x > 0) self.x -= 1;
+                if (self.x > 0) {
+                    self.clearPrev();
+                    self.x -= 1;
+                }
             },
             'k' => {
-                if (self.y < self.cv.height) self.y += 1;
+                if (self.y < self.cv.height) {
+                    self.clearPrev();
+                    self.y += 1;
+                }
             },
             'j' => {
-                if (self.y > 0) self.y -= 1;
+                if (self.y > 0) {
+                    self.clearPrev();
+                    self.y -= 1;
+                }
             },
             else => {},
         }
@@ -70,8 +89,8 @@ pub const Canvas = struct {
         rect(.{ .col = 0, .row = 0 }, self.height, self.width);
     }
 
-    pub fn point(self: *const Canvas, height: usize, width: usize) void {
-        dot(self.height - height, self.width - width);
+    pub fn point(self: *const Canvas, height: usize, width: usize, label: []const u8) void {
+        dot(self.height - height, self.width - width, label);
     }
 };
 
@@ -79,8 +98,8 @@ pub fn corner(r: usize, c: usize, pos: Corner) void {
     fmt.printf("\x1b[{d};{d}H{s}", .{ r, c, pos.str() });
 }
 
-pub fn dot(r: usize, c: usize) void {
-    fmt.printf("\x1b[{d};{d}H*", .{ r, c });
+pub fn dot(r: usize, c: usize, label: []const u8) void {
+    fmt.printf("\x1b[{d};{d}H{s}", .{ r, c, label });
 }
 
 pub fn vline(c: usize, r1: usize, r2: usize) void {

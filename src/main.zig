@@ -14,6 +14,7 @@ pub fn main() !void {
     const cv: tui.Canvas = try .init(hn, null, null);
     var protag: tui.Protag = .init(cv, cv.width / 2, cv.height / 2);
 
+    cv.draw();
     while (true) {
         // render
         protag.draw();
